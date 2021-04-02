@@ -169,12 +169,8 @@ func (l *Light) Verify(block Template) bool {
 		return false
 	}
 	log.Debug("cacheSize:", uint64(dagSize), "nonce:", block.Nonce, "hash", block.HashNoNonce.Bytes())
-	//fmt.Printf("result:%v\n", result.Bytes())
-	//fmt.Printf("cacheSize:%v,nonce:%v,height:%v", size, header.Nonce.Uint64(), number)
-	//fmt.Printf("hash:%v", ethash.SealHash(header).Bytes())
-	fmt.Printf("receive a block................")
-	fmt.Printf("result:%v\n", result.Bytes())
-
+	fmt.Printf("result:%v", result.Bytes())
+	// The actual check.
 	target := new(big.Int).Div(maxUint256, difficulty)
 	return result.Big().Cmp(target) <= 0
 }
