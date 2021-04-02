@@ -117,7 +117,7 @@ func makecache(ctx *cli.Context) error {
 	return nil
 }
 
-// makedag generates an ethash mining DAG into the provided folder.
+//makedag generates an ethash mining DAG into the provided folder.
 func makedag(ctx *cli.Context) error {
 	args := ctx.Args()
 	if len(args) != 2 {
@@ -127,7 +127,8 @@ func makedag(ctx *cli.Context) error {
 	if err != nil {
 		utils.Fatalf("Invalid block number: %v", err)
 	}
-	ethash.MakeDataset(block, args[1])
+	//ethash.MakeDataset(block, args[1])
+	ethash.MakeCache(block, args[1])
 
 	return nil
 }

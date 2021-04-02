@@ -1,0 +1,20 @@
+{
+    "config": {
+          "chainId": 753, 
+          "homesteadBlock": 0
+      },
+      "Ethash":{
+      	"CacheDir": "ethash",
+	"CachesOnDisk":"3",
+	"CachesLockMmap":"false"
+      },
+    "alloc"      : {},
+    "coinbase"   : "0x0000000000000000000000000000000005201314",
+    "difficulty" : "0x100000000",
+    "extraData"  : "0x0000000001",
+    "gasLimit"   :"0xffffffff",
+    "nonce"      : "0x0000000000000020",
+    "mixhash"    : "0x0000000000000000000000000000000000000000000000000000000000000000",
+    "parentHash" : "0x0000000000000000000000000000000000000000000000000000000000000000",
+    "timestamp"  : "0x00"
+  }

@@ -35,15 +35,15 @@ import (
 )
 
 const (
-	datasetInitBytes   = 1 << 30 // Bytes in dataset at genesis
-	datasetGrowthBytes = 1 << 23 // Dataset growth per epoch
-	cacheInitBytes     = 1 << 24 // Bytes in cache at genesis
+	datasetInitBytes   = 1 << 10 // Bytes in dataset at genesis
+	datasetGrowthBytes = 0       // Dataset growth per epoch
+	cacheInitBytes     = 1 << 10 // Bytes in cache at genesis
 	cacheGrowthBytes   = 1 << 17 // Cache growth per epoch
-	epochLength        = 30000   // Blocks per epoch
+	epochLength        = 20000   // Blocks per epoch
 	mixBytes           = 128     // Width of mix
 	hashBytes          = 64      // Hash length in bytes
 	hashWords          = 16      // Number of 32 bit ints in a hash
-	datasetParents     = 256     // Number of parents of each dataset element
+	datasetParents     = 64      // Number of parents of each dataset element
 	cacheRounds        = 3       // Number of rounds in cache production
 	loopAccesses       = 64      // Number of accesses in hashimoto loop
 )
@@ -71,24 +71,24 @@ func calcCacheSize(epoch int) uint64 {
 
 // datasetSize returns the size of the ethash mining dataset that belongs to a certain
 // block number.
-func datasetSize(block uint64) uint64 {
-	epoch := int(block / epochLength)
-	if epoch < maxEpoch {
-		return datasetSizes[epoch]
-	}
-	return calcDatasetSize(epoch)
-}
+// func datasetSize(block uint64) uint64 {
+// 	epoch := int(block / epochLength)
+// 	if epoch < maxEpoch {
+// 		return datasetSizes[epoch]
+// 	}
+// 	return calcDatasetSize(epoch)
+// }
 
 // calcDatasetSize calculates the dataset size for epoch. The dataset size grows linearly,
 // however, we always take the highest prime below the linearly growing threshold in order
-// to reduce the risk of accidental regularities leading to cyclic behavior.
-func calcDatasetSize(epoch int) uint64 {
-	size := datasetInitBytes + datasetGrowthBytes*uint64(epoch) - mixBytes
-	for !new(big.Int).SetUint64(size / mixBytes).ProbablyPrime(1) { // Always accurate for n < 2^64
-		size -= 2 * mixBytes
-	}
-	return size
-}
+// // to reduce the risk of accidental regularities leading to cyclic behavior.
+// func calcDatasetSize(epoch int) uint64 {
+// 	size := datasetInitBytes + datasetGrowthBytes*uint64(epoch) - mixBytes
+// 	for !new(big.Int).SetUint64(size / mixBytes).ProbablyPrime(1) { // Always accurate for n < 2^64
+// 		size -= 2 * mixBytes
+// 	}
+// 	return size
+// }
 
 // hasher is a repetitive hasher allowing the same hash data structures to be
 // reused between hash runs instead of requiring new ones to be created.

@@ -132,11 +132,11 @@ func (ethash *Ethash) Seal(chain consensus.ChainHeaderReader, block *types.Block
 func (ethash *Ethash) mine(block *types.Block, id int, seed uint64, abort chan struct{}, found chan *types.Block) {
 	// Extract some data from the header
 	var (
-		header  = block.Header()
-		hash    = ethash.SealHash(header).Bytes()
-		target  = new(big.Int).Div(two256, header.Difficulty)
-		number  = header.Number.Uint64()
-		dataset = ethash.dataset(number, false)
+		header = block.Header()
+		hash   = ethash.SealHash(header).Bytes()
+		target = new(big.Int).Div(two256, header.Difficulty)
+		number = header.Number.Uint64()
+		cache  = ethash.cache(number)
 	)
 	// Start generating random nonces until we abort or find a good one
 	var (
@@ -162,7 +162,8 @@ search:
 				attempts = 0
 			}
 			// Compute the PoW value of this nonce
-			digest, result := hashimotoFull(dataset.dataset, hash, nonce)
+			//digest, result := hashimotoFull(dataset.dataset, hash, nonce)
+			digest, result := hashimotoLight(cacheSize(number), cache.cache, hash, nonce)
 			if new(big.Int).SetBytes(result).Cmp(target) <= 0 {
 				// Correct nonce found, create a new header with it
 				header = types.CopyHeader(header)
@@ -183,7 +184,7 @@ search:
 	}
 	// Datasets are unmapped in a finalizer. Ensure that the dataset stays live
 	// during sealing so it's not unmapped while being read.
-	runtime.KeepAlive(dataset)
+	runtime.KeepAlive(cache)
 }
 
 // This is the timeout for HTTP requests to notify external miners.
@@ -418,9 +419,11 @@ func (s *remoteSealer) submitWork(nonce types.BlockNonce, mixDigest common.Hash,
 	start := time.Now()
 	if !s.noverify {
 		if err := s.ethash.verifySeal(nil, header, true); err != nil {
-			s.ethash.config.Log.Warn("Invalid proof-of-work submitted", "sealhash", sealhash, "elapsed", common.PrettyDuration(time.Since(start)), "err", err)
+			s.ethash.config.Log.Warn("Invalid proof-of-work submitted", "sealhash", sealhash, "elapsed", common.PrettyDuration(time.Since(start)), "err", err, "nonce:", nonce, "mixDigest:", mixDigest)
+
 			return false
 		}
+		s.ethash.config.Log.Warn("sucess!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 	}
 	// Make sure the result channel is assigned.
 	if s.results == nil {
